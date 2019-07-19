@@ -1,0 +1,26 @@
+//player chooses rock, paper, or scissors
+//computer selects a random number, which is converted into 1, 2, or 3
+var player = "rock";
+var computer = Math.ceil(Math.random() * 3);
+
+//use a conditional statement to turn 3, 2, 1 into rock, paper, or scissors
+if (computer === 3){
+    computer = "rock";
+} else if(computer === 2){
+    computer = "paper";
+} else{
+    computer = "scissors";
+}
+
+//use a conditional statement to determine a winner and print to the console
+if (player !== "rock" && player !== "scissors" && player !== "paper"){
+    console.log("You can\'t choose " + player + ".\nTry again!");
+} else if (computer === player){
+    console.log("You chose " + player + ".\nI chose " + computer + ".\nIt\'s a draw! Try again!");
+} else if ((player === "rock" && computer === "scissors") || 
+        (player === "paper" && computer === "rock") || 
+        (player === "scissors" && computer === "paper")){
+    console.log("You chose " + player + ".\nI chose " + computer + ".\nYou win!");
+} else {
+    console.log("You chose " + player + ".\nI chose " + computer + ".\nI win!");
+}
