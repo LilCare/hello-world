@@ -1,26 +1,201 @@
-//player chooses rock, paper, or scissors
-//computer selects a random number, which is converted into 1, 2, or 3
-var player = "rock";
-var computer = Math.ceil(Math.random() * 3);
-
-//use a conditional statement to turn 3, 2, 1 into rock, paper, or scissors
-if (computer === 3){
-    computer = "rock";
-} else if(computer === 2){
-    computer = "paper";
-} else{
-    computer = "scissors";
+//FUNCTION DECLARATIONS
+function rockPaperScissors() {
+  //randomly chooses rock, paper, or scissors
+  var computer = Math.random();
+  
+  if (computer <= 1/3){
+    return 'rock';
+  } else if (computer <= 2/3 && computer > 1/3){
+    return 'paper';
+  } else {
+    return 'scissors';
+  }
 }
 
-//use a conditional statement to determine a winner and print to the console
-if (player !== "rock" && player !== "scissors" && player !== "paper"){
-    console.log("You can\'t choose " + player + ".\nTry again!");
-} else if (computer === player){
-    console.log("You chose " + player + ".\nI chose " + computer + ".\nIt\'s a draw! Try again!");
-} else if ((player === "rock" && computer === "scissors") || 
-        (player === "paper" && computer === "rock") || 
-        (player === "scissors" && computer === "paper")){
-    console.log("You chose " + player + ".\nI chose " + computer + ".\nYou win!");
-} else {
-    console.log("You chose " + player + ".\nI chose " + computer + ".\nI win!");
+function playRockPaperScissors(player) {
+  //declares winner as the computer, the player, or a draw
+  //asks player to try again, if they do not choose rock, paper, or scissors
+  var computer = rockPaperScissors();
+  
+  if (player !== 'rock' && player !== 'scissors' && player !== 'paper'){
+    return ('You can\'t choose ' + player + '.\nTry again!');
+  } else if (computer === player){
+    return ('You chose ' + player + '.\nI chose ' + computer + '.\nIt\'s a draw.'); 
+  } else if ((player === 'rock' && computer === 'scissors') || (player === 'paper' && computer === 'rock') || (player === 'scissors' && computer === 'paper')){
+    return ('You chose ' + player + '.\nI chose ' + computer + '.\nYou win!');
+  } else {
+    return ('You chose ' + player + '.\nI chose ' + computer + '.\nI win!');
+  }
+}
+
+function rockPaperScissorsData(totalRounds) {
+  //tests player choices (only rock, paper, scissors) n times and keeps track of:
+    //1) What the computer chooses each time
+    //2) Who wins each time
+  var results = [
+    {playerChoice: 'rock',
+      countComputerChoices: {
+        rock: 0,
+        paper: 0,
+        scissors: 0
+      },
+      countWins: {
+        player: 0,
+        computer: 0,
+        draw: 0
+      }
+    },
+    {playerChoice: 'paper',
+      countComputerChoices: {
+        rock: 0,
+        paper: 0,
+        scissors: 0
+      },
+      countWins: {
+        player: 0,
+        computer: 0,
+        draw: 0
+      }
+    },
+    {playerChoice: 'scissors',
+      countComputerChoices: {
+        rock: 0,
+        paper: 0,
+        scissors: 0
+      },
+      countWins: {
+        player: 0,
+        computer: 0,
+        draw: 0
+      }
+    }
+  ]
+
+  results.forEach(function(player){
+    for (var i = 1; i <= totalRounds; i++){
+      var playerChoice = player.playerChoice;
+      var gameResult = playRockPaperScissors(playerChoice);
+      
+      if (gameResult.indexOf('I chose rock') > -1){
+        player.countComputerChoices.rock++;
+      } else if (gameResult.indexOf('I chose paper') > -1){
+        player.countComputerChoices.paper++;
+      } else {
+        player.countComputerChoices.scissors++;
+      }
+      
+      if (gameResult.indexOf('draw') > -1){
+        player.countWins.draw++;
+      } else if (gameResult.indexOf('You win') > -1){
+        player.countWins.player++;
+      } else {
+        player.countWins.computer++;
+      }
+    }
+  });
+  return results; 
+}
+
+//ASSERTION FUNCTIONS
+function assertWithinPossibilities(actual, expectedPossibilities, testName){
+  //input: actual = scalar value, expected = array of scalar values
+  if (expectedPossibilities.indexOf(actual) > -1){
+    console.log(`passed [${testName}]`);
+  } else {
+    console.log(`FAILED [${testName}] Actual result "${actual}" is not within "${expectedPossibilities}"`);
+  }
+}
+function assertEqual(actual, expected, testName){
+  if(actual === expected){
+    console.log(`passed [${testName}]`);
+  } else {
+    console.log(`FAILED [${testName}] Expected "${expected}", but actual result is "${actual}"`);
+  }
+}
+
+function assertArraysEqual(actual, expected, testName){
+  var areEqualLengths = (actual.length === expected.length) ? true : false;
+  var areEqualValues = true;
+  for (var i = 0; i < expected.length; i++){
+    if (actual[i] !== expected [i]){
+      areEqualValues = false;
+      break;
+    }
+  }
+  if(areEqualLengths && areEqualValues){
+    console.log(`passed [${testName}]`);
+  } else {
+    console.log(`FAILED [${testName}] Expected "${expected}", but actual result is "${actual}"`);
+  }
+}
+
+//TESTS FOR rockPaperScissors()
+testIfRockPaperOrScissors()
+
+function testIfRockPaperOrScissors(){
+  assertWithinPossibilities(rockPaperScissors(), ['rock', 'paper', 'scissors'], 'randomly returns rock, paper, or scissors for the computer choice');
+}
+
+//TESTS FOR playRockPaperScissors()
+testChoiceRockPaperScissors();
+testChoiceNotRockPaperScissors();
+
+function testChoiceRockPaperScissors(){
+  var playerChoice = 'rock'
+  var gameResult = playRockPaperScissors(playerChoice);
+  var targetPhrase = '';
+  if (typeof gameResult !== 'string'){
+    targetPhrase = gameResult;
+  } else if(gameResult.indexOf('I win') > -1){
+    targetPhrase = 'I win';
+  } else if(gameResult.indexOf('You win') > -1){
+    targetPhrase = 'You win';
+  } else if(gameResult.indexOf('It\'s a draw') > -1){
+    targetPhrase = 'It\'s a draw';
+  } else {
+    targetPhrase = gameResult;
+  }
+  assertWithinPossibilities(targetPhrase, ['I win', 'You win', 'It\'s a draw'], 'declares winner when player chooses rock, paper, or scissors');
+}
+
+function testChoiceNotRockPaperScissors(){
+  var playerChoice = 'tails'
+  var gameResult = playRockPaperScissors(playerChoice);
+  var targetPhrase = '';
+  if (typeof gameResult !== 'string'){
+    targetPhrase = gameResult;
+  } else if(gameResult.indexOf('Try again') > -1){
+    targetPhrase = 'Try again';
+  } else {
+    targetPhrase = gameResult;
+  }
+  assertEqual(targetPhrase, 'Try again', 'if player chooses something other than rock, paper, or scissors, it tells player to try again');
+}
+
+//TESTS FOR rockPaperScissorsData()
+testRockPaperScissorsComputerChoiceData();
+testRockPaperScissorsCountWinsData();
+
+function testRockPaperScissorsComputerChoiceData(){
+  var totalRounds = 100;
+  var choiceSums = [0, 0, 0]
+  var results = rockPaperScissorsData(totalRounds);
+  for (var i = 0; i < 3; i++){
+    var computerChoices = results[i].countComputerChoices;
+    choiceSums[i] = computerChoices.rock + computerChoices.paper + computerChoices.scissors;
+  }
+  var sums = new Set(choiceSums);
+  assertArraysEqual([...sums], [totalRounds], 'for n total rounds played, computer choice counts also sum to n')
+}
+
+function testRockPaperScissorsCountWinsData(){
+  var totalRounds = 100;
+  var winSums = [0, 0, 0]
+  var results = rockPaperScissorsData(totalRounds);
+  for (var i = 0; i < 3; i++){
+    var wins = results[i].countWins;
+    winSums[i] = wins.player + wins.computer + wins.draw;
+  }
+  var sums = new Set(winSums);
+  assertArraysEqual([...sums], [100], 'for n total rounds played, win counts also sum to n')
 }
