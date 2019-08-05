@@ -1,0 +1,64 @@
+//FUNCTION DECLARATIONS
+function coinFlip(probabilityHeads) {
+  var flip = Math.random();
+  return (flip <= probabilityHeads) ? 'heads' : 'tails';
+}
+
+function countsHeadsAndTails(totalFlips, probabilityHeads) {
+  var count = {
+    heads: 0, 
+    tails: 0,
+    isFiftyFifty: true};
+  for(var i = 1; i <= totalFlips; i++){
+    var flip = coinFlip(probabilityHeads);
+    (flip === 'heads') ? count.heads++ : count.tails++;
+  }
+  var oddsHeads = ((count.heads / totalFlips) * 100);
+  var oddsEvens = ((count.tails / totalFlips) * 100);
+  if (Math.abs(oddsHeads - oddsEvens) > 5){
+    count.isFiftyFifty = false;
+  }
+  return count;
+}
+
+//ASSERTION FUNCTIONS
+function assertWithinPossibilities(actual, expectedPossibilities, testName){
+  //input: actual = scalar value, expected = array of scalar values
+  if (expectedPossibilities.indexOf(actual) > -1){
+    console.log(`passed [${testName}]`);
+  } else {
+    console.log(`FAILED [${testName}] Actual result "${actual}" is not within "${expectedPossibilities}"`);
+  }
+}
+
+function assertEqual(actual, expected, testName){
+  if(actual === expected){
+    console.log(`passed [${testName}]`);
+  } else {
+    console.log(`FAILED [${testName}] Expected "${expected}", but actual result is "${actual}"`);
+  }
+}
+
+//TEST for coinFlip()
+testsHeadsOrTails();
+
+function testsHeadsOrTails(){
+  var probabilityHeads = 0.5;
+  assertWithinPossibilities(coinFlip(probabilityHeads), 'computer randomly picks heads or tails');
+}
+
+//TEST for countsHeadsAndTails
+testsHeadsAndTailsCounts();
+testsRosecrantzAndGuildensternAreDead();
+
+function testsHeadsAndTailsCounts(){
+  var result = countsHeadsAndTails(1000, 0.5);
+  var actualSumCounts = result.heads + result.tails;
+  assertEqual(actualSumCounts, 1000, 'counts for heads and tails match the total number of rounds')
+}
+
+function testsRosecrantzAndGuildensternAreDead(){
+  var result = countsHeadsAndTails(100, 0.99);
+  var actualFiftyFiftyResult = result.isFiftyFifty;
+  assertEqual(actualFiftyFiftyResult, false, 'returns false for isFiftyFifty when the probability of heads is set to 0.99');
+}
